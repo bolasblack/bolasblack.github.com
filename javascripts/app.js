@@ -258,7 +258,7 @@ angular.module('app.services', ['ngResource']).factory('Deferred', function() {
       deferred = Deferred();
       postList = _.waterfall(function(callback) {
         return $.ajax({
-          url: "https://api.github.com/repos/" + username + "          /" + reponame + "/contents",
+          url: "https://api.github.com/repos/" + username + "/" + reponame + "/contents",
           headers: {
             "Origin": location.host
           }
