@@ -14556,6 +14556,14 @@ if (typeof exports === 'object') {
         });
       };
     }
+  ]).run([
+    '$rootScope', function($rootScope) {
+      return $rootScope.$safeDigest = function() {
+        if (!this.$$phase) {
+          return this.$digest();
+        }
+      };
+    }
   ]).config([
     '$provide', function($provide) {
       return $provide.decorator('$resource', [
@@ -14635,10 +14643,7 @@ if (typeof exports === 'object') {
     }
   ]).directive('busybtn', [
     '$q', '$parse', function($q, $parse) {
-      var EXPRESSION_RE;
-      EXPRESSION_RE = /^{{(.+)}}$/;
       return {
-        terminal: true,
         link: function(scope, element, attrs) {
           var bindEvents, bindFn, bindPromise, changeMethod, handler, isBusy, originalText;
           isBusy = false;
@@ -14652,7 +14657,6 @@ if (typeof exports === 'object') {
               return;
             }
             isBusy = true;
-            originalText = element[changeMethod]();
             fn = $parse(attrs.busybtnHandler);
             return $q.when(fn(scope, {
               $event: event,
@@ -14691,13 +14695,14 @@ if (typeof exports === 'object') {
               });
             });
           };
-          if (EXPRESSION_RE.test(originalText)) {
-            try {
-              originalText = originalText.replace(EXPRESSION_RE, function($, $1) {
-                return scope.$eval($1);
-              });
-            } catch (_error) {}
-          }
+          scope.$watch((function() {
+            return element[changeMethod]();
+          }), function(newVal) {
+            if (newVal === attrs.busybtnText) {
+              return;
+            }
+            return originalText = newVal;
+          });
           bindFn = /Promise$/.test(attrs.busybtn) ? bindPromise : bindEvents;
           bindFn(attrs.busybtn);
           return scope.$watch((function() {
@@ -15437,7 +15442,6 @@ if (typeof exports === 'object') {
 		callHttpApi : function (apiParams) {
 			apiParams.url = Gh3.Helper.protocol + "://" + Gh3.Helper.domain + "/" + apiParams.service;
 			if ($.support.cors) {
-				apiParams.headers = { Origin: location.host }
 				var success = apiParams.success
 				if ($.isFunction(success)) {
 					apiParams.success = function (data, textStatus, jqXHR) {

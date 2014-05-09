@@ -1,10 +1,6 @@
 (function() {
   'use strict';
-  var App;
-
-  App = angular.module('app', ['ngRoute', 'ngCookies', 'ngResource', 'ui.bootstrap', 'app.controllers', 'app.directives', 'app.filters', 'app.services']);
-
-  App.config([
+  angular.module('app', ['ngRoute', 'ngCookies', 'ngResource', 'ui.bootstrap', 'app.controllers', 'app.directives', 'app.filters', 'app.services']).config([
     '$routeProvider', '$locationProvider', function($routeProvider, $locationProvider, config) {
       $routeProvider.when('/', {
         templateUrl: 'partials/posts_list.html'
@@ -15,9 +11,6 @@
     }
   ]);
 
-}).call(this);
-
-(function() {
   angular.element(document).ready(function() {
     return angular.bootstrap(document, ['app']);
   });
@@ -56,9 +49,6 @@
         return $scope.posts = posts;
       });
       return $scope.avgrundOpts = {
-        clean: function($scope) {
-          return $window.DISQUS = null;
-        },
         render: function($scope, callback) {
           return $scope.post.fetchContent(function(err, post) {
             var metaData;
@@ -66,7 +56,7 @@
               return false;
             }
             metaData = post.getMetaData();
-            return callback("<div class=\"modal-header\">\n  <h4 class=\"modal-title\">" + metaData.title + "</h4>\n</div>\n<div class=\"modal-body\">\n  <article id=\"article" + metaData.identifier + "\">\n    " + (post.getHtmlContent()) + "\n    <div id=\"disqus_thread\"></div>\n  </article>\n</div>\n\n<script>\n  delete window.disqus_url\n  delete window.disqus_title\n  delete window.disqus_shortname\n  delete window.disqus_identifier\n\n  window.disqus_shortname = 'plaferinfo',\n  window.disqus_identifier = '" + metaData.identifier + "',\n  window.disqus_title = '" + metaData.title + "',\n  window.disqus_url = '" + location.href + metaData.identifier + "'\n\n  ;(function() {\n    var d = window.document,\n        t = function(tn) { return d.getElementsByTagName(tn)[0] },\n        elem = d.getElementById(\"article" + metaData.identifier + "\"),\n        dsq = d.createElement('script')\n\n    hljs.highlightBlock(elem);\n    dsq.type = 'text/javascript'\n    dsq.async = true\n    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js'\n    ;(t('head') || t('body')).appendChild(dsq)\n  })()\n</script>");
+            return callback("<div class=\"modal-header\">\n  <h4 class=\"modal-title\">" + metaData.title + "</h4>\n</div>\n<div class=\"modal-body\">\n  <article id=\"article" + metaData.identifier + "\">\n    " + (post.getHtmlContent()) + "\n    <div id=\"disqus_thread\"></div>\n  </article>\n</div>");
           });
         }
       };
@@ -134,20 +124,20 @@
   angular.module('app.services', ['ngResource']).factory("Gh3.File", function() {
     var fetchContent, parsePostData;
     parsePostData = function(post) {
-      var contentParts, createTimeRE, createTimeStr, metaData, name, rawContent, validParts;
+      var contentParts, createTimeRE, createTimeStr, metaData, name, rawContent, unemptyParts;
       rawContent = post.getRawContent();
       if (rawContent) {
-        contentParts = rawContent.split(/^-+$/m);
-        validParts = _(contentParts).select(function(part) {
+        contentParts = rawContent.split(/^[\s-]+$/m);
+        unemptyParts = _.select(contentParts, function(part) {
           return part.replace(/\s/g, "");
-        }).value();
+        });
         if (contentParts[0].replace(/-/g, "") === "") {
-          metaData = $.extend(post.metaData, jsyaml.load(validParts[0]));
+          metaData = $.extend(post.metaData, jsyaml.load(unemptyParts[0]));
           delete metaData.title;
           post.metaData = metaData;
-          post.postData = validParts[1];
+          post.postData = unemptyParts[1];
         } else {
-          post.postData = validParts[0];
+          post.postData = unemptyParts[0];
         }
         post.htmlData = marked(post.postData);
       }
