@@ -84363,13 +84363,15 @@ var repo = gh.getRepo('bolasblack', 'BlogPosts');
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__ = __webpack_require__("./node_modules/redux-saga/effects.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_redux_saga_effects___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_r_immu__ = __webpack_require__("./scripts/utils/r_immu.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions_post__ = __webpack_require__("./scripts/actions/post.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__github__ = __webpack_require__("./scripts/sagas/github.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_parse_github_files__ = __webpack_require__("./scripts/utils/parse_github_files.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_parse_github_file__ = __webpack_require__("./scripts/utils/parse_github_file.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_s__ = __webpack_require__("./scripts/utils/s.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__actions_post__ = __webpack_require__("./scripts/actions/post.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__github__ = __webpack_require__("./scripts/sagas/github.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_parse_github_files__ = __webpack_require__("./scripts/utils/parse_github_files.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_parse_github_file__ = __webpack_require__("./scripts/utils/parse_github_file.js");
 
 
-var _marked = [saga, fetchPosts, fetchPost].map(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark);
+var _marked = [fetchPostContent, saga, fetchPosts, fetchPost].map(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark);
+
 
 
 
@@ -84382,19 +84384,24 @@ var _marked = [saga, fetchPosts, fetchPost].map(__WEBPACK_IMPORTED_MODULE_0_babe
 
 /* harmony default export */ exports["a"] = saga;
 
-function saga(getState) {
-  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function saga$(_context) {
+function fetchPostContent(filePath) {
+  var resp;
+  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function fetchPostContent$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_redux_saga__["takeEvery"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["c" /* Types */].requestList, fetchPosts, getState);
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["call"])([null, fetch], 'https://raw.githubusercontent.com/bolasblack/BlogPosts/master/' + filePath);
 
         case 2:
-          _context.next = 4;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_redux_saga__["takeEvery"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["c" /* Types */].requestItem, fetchPost, getState);
+          resp = _context.sent;
+          _context.next = 5;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["call"])([resp, resp.text]);
 
-        case 4:
+        case 5:
+          return _context.abrupt('return', _context.sent);
+
+        case 6:
         case 'end':
           return _context.stop();
       }
@@ -84402,21 +84409,19 @@ function saga(getState) {
   }, _marked[0], this);
 }
 
-function fetchPosts(getState, action) {
-  var resp;
-  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function fetchPosts$(_context2) {
+function saga(getState) {
+  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function saga$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
           _context2.next = 2;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["call"])([__WEBPACK_IMPORTED_MODULE_5__github__["a" /* repo */], __WEBPACK_IMPORTED_MODULE_5__github__["a" /* repo */].getContents], 'master');
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_redux_saga__["takeEvery"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["c" /* Types */].requestList, fetchPosts, getState);
 
         case 2:
-          resp = _context2.sent;
-          _context2.next = 5;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["a" /* actionCreators */].requestListSucceed(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_parse_github_files__["a" /* default */])(resp.data)));
+          _context2.next = 4;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_redux_saga__["takeEvery"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["c" /* Types */].requestItem, fetchPost, getState);
 
-        case 5:
+        case 4:
         case 'end':
           return _context2.stop();
       }
@@ -84424,60 +84429,82 @@ function fetchPosts(getState, action) {
   }, _marked[1], this);
 }
 
-function fetchPost(getState, action) {
-  var state, post, resp;
-  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function fetchPost$(_context3) {
+function fetchPosts(getState, action) {
+  var resp;
+  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function fetchPosts$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          state = getState();
-          post = state.getIn(['posts', action.payload.path]);
+          _context3.next = 2;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["call"])([__WEBPACK_IMPORTED_MODULE_6__github__["a" /* repo */], __WEBPACK_IMPORTED_MODULE_6__github__["a" /* repo */].getContents], 'master');
 
-          if (!(post && post.get('content') != null)) {
-            _context3.next = 7;
-            break;
-          }
-
+        case 2:
+          resp = _context3.sent;
           _context3.next = 5;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["a" /* actionCreators */].requestItemSucceed({
-            path: action.payload.path,
-            data: post.toJS()
-          }));
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["a" /* actionCreators */].requestListSucceed(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils_parse_github_files__["a" /* default */])(resp.data)));
 
         case 5:
-          _context3.next = 16;
-          break;
-
-        case 7:
-          _context3.next = 9;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["a" /* actionCreators */].requestItemStart());
-
-        case 9:
-          _context3.next = 11;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["call"])([__WEBPACK_IMPORTED_MODULE_5__github__["a" /* repo */], __WEBPACK_IMPORTED_MODULE_5__github__["a" /* repo */].getContents], 'master', action.payload.path);
-
-        case 11:
-          resp = _context3.sent;
-          _context3.next = 14;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["a" /* actionCreators */].requestItemEnd());
-
-        case 14:
-          _context3.next = 16;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["a" /* actionCreators */].requestItemSucceed({
-            path: action.payload.path,
-            data: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__utils_parse_github_file__["a" /* default */])(resp.data)
-          }));
-
-        case 16:
-          _context3.next = 18;
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_4__actions_post__["a" /* actionCreators */].show({ path: action.payload.path }));
-
-        case 18:
         case 'end':
           return _context3.stop();
       }
     }
   }, _marked[2], this);
+}
+
+function fetchPost(getState, action) {
+  var state, post, postContent;
+  return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function fetchPost$(_context4) {
+    while (1) {
+      switch (_context4.prev = _context4.next) {
+        case 0:
+          state = getState();
+          post = state.getIn(['posts', action.payload.path]);
+
+          if (!(post && post.get('content') != null)) {
+            _context4.next = 7;
+            break;
+          }
+
+          _context4.next = 5;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["a" /* actionCreators */].requestItemSucceed({
+            path: action.payload.path,
+            data: post.toJS()
+          }));
+
+        case 5:
+          _context4.next = 16;
+          break;
+
+        case 7:
+          _context4.next = 9;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["a" /* actionCreators */].requestItemStart());
+
+        case 9:
+          _context4.next = 11;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["call"])([null, fetchPostContent], action.payload.path);
+
+        case 11:
+          postContent = _context4.sent;
+          _context4.next = 14;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["a" /* actionCreators */].requestItemEnd());
+
+        case 14:
+          _context4.next = 16;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["a" /* actionCreators */].requestItemSucceed({
+            path: action.payload.path,
+            data: __WEBPACK_IMPORTED_MODULE_4__utils_s__["a" /* default */].maybeToNullable(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__utils_parse_github_file__["b" /* parseRawContent */])(postContent))
+          }));
+
+        case 16:
+          _context4.next = 18;
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_redux_saga_effects__["put"])(__WEBPACK_IMPORTED_MODULE_5__actions_post__["a" /* actionCreators */].show({ path: action.payload.path }));
+
+        case 18:
+        case 'end':
+          return _context4.stop();
+      }
+    }
+  }, _marked[3], this);
 }
 
  ;(function register() { /* react-hot-loader/webpack */ if (false) { if (typeof __REACT_HOT_LOADER__ === 'undefined') { return; } if (typeof module.exports === 'function') { __REACT_HOT_LOADER__.register(module.exports, 'module.exports', "/Volumes/HDD/workSpace/BlogFront/scripts/sagas/post.js"); return; } for (var key in module.exports) { if (!Object.prototype.hasOwnProperty.call(module.exports, key)) { continue; } var namedExport = void 0; try { namedExport = module.exports[key]; } catch (err) { continue; } __REACT_HOT_LOADER__.register(namedExport, key, "/Volumes/HDD/workSpace/BlogFront/scripts/sagas/post.js"); } } })();
@@ -84813,7 +84840,7 @@ function createChainableTypeChecker(validate) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_path__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils__ = __webpack_require__("./scripts/utils/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_yaml__ = __webpack_require__("./scripts/utils/yaml.js");
-/* unused harmony export parseRawContent */
+/* harmony export (binding) */ __webpack_require__.d(exports, "b", function() { return parseRawContent; });
 /* unused harmony export b64DecodeUnicode */
 /* unused harmony export b64EncodeUnicode */
 
@@ -84822,33 +84849,29 @@ function createChainableTypeChecker(validate) {
 
 
 
-// String -> S.Maybe {createDate: String, title: String}
+// :: String -> S.Maybe {createDate: String, title: String}
 var parseFilename = __WEBPACK_IMPORTED_MODULE_0_ramda___default.a.compose(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.compose(__WEBPACK_IMPORTED_MODULE_3__utils__["a" /* default */].adjustObj(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.replace(/_/g, ' '), 'title'), __WEBPACK_IMPORTED_MODULE_0_ramda___default.a.zipObj(['createDate', 'title']), __WEBPACK_IMPORTED_MODULE_0_ramda___default.a.slice(1, Infinity), __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].justs)), __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].match(/(\d{4}-\d{2}-\d{2})-(.+)\.(?:md)/));
 
-// {encoding: String, content: String} -> S.Maybe {meta: Object, content: String}
-var parseRawContent = function parseRawContent(file) {
-  if (file.content == null) return __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.empty();
+// :: String -> S.Maybe {meta: Object, content: String}
+var parseRawContent = function parseRawContent(content) {
+  if (content == null) return __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.empty();
 
-  var content = file.content,
-      encoding = file.encoding;
-
-
-  var decodedContent = void 0;
-  if (encoding.toLowerCase() === 'base64') {
-    decodedContent = __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.of(b64DecodeUnicode(content));
-  } else {
-    decodedContent = __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.empty();
-  }
-
-  return decodedContent.map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.pipe(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.split(/^-+$/m), __WEBPACK_IMPORTED_MODULE_0_ramda___default.a.map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.trim), __WEBPACK_IMPORTED_MODULE_3__utils__["a" /* default */].compact, __WEBPACK_IMPORTED_MODULE_0_ramda___default.a.zipObj(['meta', 'content']), __WEBPACK_IMPORTED_MODULE_3__utils__["a" /* default */].adjustObj(__WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].encaseEither(__WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].I, __WEBPACK_IMPORTED_MODULE_4__utils_yaml__["a" /* default */].parse), 'meta'))).chain(function (data) {
+  return __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.of(content).map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.pipe(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.split(/^-+$/m), __WEBPACK_IMPORTED_MODULE_0_ramda___default.a.map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.trim), __WEBPACK_IMPORTED_MODULE_3__utils__["a" /* default */].compact, __WEBPACK_IMPORTED_MODULE_0_ramda___default.a.zipObj(['meta', 'content']), __WEBPACK_IMPORTED_MODULE_3__utils__["a" /* default */].adjustObj(__WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].encaseEither(__WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].I, __WEBPACK_IMPORTED_MODULE_4__utils_yaml__["a" /* default */].parse), 'meta'))).chain(function (data) {
     return data.meta.isLeft || !__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.is(Object, data.meta.value) ? __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.empty() : __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.of(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.assoc('meta', data.meta.value, data));
   });
 };
 
-// {name: String, encoding: String, content: String, path: String, html_url: String} ->
+// :: {encoding: String, content: String} -> S.Maybe {meta: Object, content: String}
+var decodeAndParseContent = function decodeAndParseContent(file) {
+  if (file.content == null) return __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.empty();
+  if (file.encoding.toLowerCase() !== 'base64') return __WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].Maybe.empty();
+  return parseRawContent(b64DecodeUnicode(file.content));
+};
+
+// :: {name: String, encoding: String, content: String, path: String, html_url: String} ->
 //   ?{title: String, createDate: String, meta: Object, content: String, path: String, html_url: String}
 /* harmony default export */ exports["a"] = function (file) {
-  return parseFilename(file.name).map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.merge(__WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].fromMaybe({}, parseRawContent(file)))).map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.merge(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.pick(['path', 'html_url'], file))).value;
+  return parseFilename(file.name).map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.merge(__WEBPACK_IMPORTED_MODULE_1__s__["a" /* default */].fromMaybe({}, decodeAndParseContent(file)))).map(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.merge(__WEBPACK_IMPORTED_MODULE_0_ramda___default.a.pick(['path', 'html_url'], file))).value;
 };
 
 // https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
